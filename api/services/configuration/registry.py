@@ -1018,6 +1018,40 @@ class GoogleRealtimeLLMConfiguration(BaseLLMConfiguration):
             "allow_custom_input": True,
         },
     )
+    start_of_speech_sensitivity: str | None = Field(
+        default=None,
+        description=(
+            "How sensitive the model is to the start of speech. "
+            "Leave blank for the server default."
+        ),
+        json_schema_extra={
+            "examples": ["START_SENSITIVITY_LOW", "START_SENSITIVITY_HIGH"],
+        },
+    )
+    end_of_speech_sensitivity: str | None = Field(
+        default=None,
+        description=(
+            "How sensitive the model is to the end of speech. "
+            "Leave blank for the server default."
+        ),
+        json_schema_extra={
+            "examples": ["END_SENSITIVITY_LOW", "END_SENSITIVITY_HIGH"],
+        },
+    )
+    prefix_padding_ms: int | None = Field(
+        default=None,
+        description=(
+            "Milliseconds of audio to include before detected speech. "
+            "Leave blank for the server default."
+        ),
+    )
+    silence_duration_ms: int | None = Field(
+        default=None,
+        description=(
+            "Milliseconds of silence that mark the end of a speech segment. "
+            "Leave blank for the server default."
+        ),
+    )
 
 
 @register_service(ServiceType.REALTIME)
@@ -1049,6 +1083,40 @@ class GoogleVertexRealtimeLLMConfiguration(BaseLLMConfiguration):
             "examples": GOOGLE_VERTEX_REALTIME_LANGUAGES,
             "allow_custom_input": True,
         },
+    )
+    start_of_speech_sensitivity: str | None = Field(
+        default=None,
+        description=(
+            "How sensitive the model is to the start of speech. "
+            "Leave blank for the server default."
+        ),
+        json_schema_extra={
+            "examples": ["START_SENSITIVITY_LOW", "START_SENSITIVITY_HIGH"],
+        },
+    )
+    end_of_speech_sensitivity: str | None = Field(
+        default=None,
+        description=(
+            "How sensitive the model is to the end of speech. "
+            "Leave blank for the server default."
+        ),
+        json_schema_extra={
+            "examples": ["END_SENSITIVITY_LOW", "END_SENSITIVITY_HIGH"],
+        },
+    )
+    prefix_padding_ms: int | None = Field(
+        default=None,
+        description=(
+            "Milliseconds of audio to include before detected speech. "
+            "Leave blank for the server default."
+        ),
+    )
+    silence_duration_ms: int | None = Field(
+        default=None,
+        description=(
+            "Milliseconds of silence that mark the end of a speech segment. "
+            "Leave blank for the server default."
+        ),
     )
     project_id: str = Field(description="Google Cloud project ID for Vertex AI.")
     location: str = Field(

@@ -1289,6 +1289,35 @@ def create_llm_service_from_provider(
         raise HTTPException(status_code=400, detail=f"Invalid LLM provider {provider}")
 
 
+def _build_gemini_vad_params(realtime_config):
+    """Build a ``GeminiVADParams`` from Dograh's user-facing VAD fields.
+
+    Returns ``None`` when every VAD field is unset so the caller can leave
+    ``Settings.vad`` at its default (``None`` / ``NOT_GIVEN``), preserving
+    the provider's own behaviour.
+    """
+    vad_kwargs = {}
+    start = getattr(realtime_config, "start_of_speech_sensitivity", None)
+    if start is not None:
+        vad_kwargs["start_sensitivity"] = start
+    end = getattr(realtime_config, "end_of_speech_sensitivity", None)
+    if end is not None:
+        vad_kwargs["end_sensitivity"] = end
+    prefix = getattr(realtime_config, "prefix_padding_ms", None)
+    if prefix is not None:
+        vad_kwargs["prefix_padding_ms"] = prefix
+    silence = getattr(realtime_config, "silence_duration_ms", None)
+    if silence is not None:
+        vad_kwargs["silence_duration_ms"] = silence
+
+    if not vad_kwargs:
+        return None
+
+    from pipecat.services.google.gemini_live.llm import GeminiVADParams
+
+    return GeminiVADParams(**vad_kwargs)
+
+
 @_report_service_factory_failures(ErrorSource.LLM, config_section="realtime")
 def create_realtime_llm_service(user_config, audio_config: "AudioConfig"):
     """Create a realtime (speech-to-speech) LLM service that handles STT+LLM+TTS.
@@ -1447,6 +1476,11 @@ def create_realtime_llm_service(user_config, audio_config: "AudioConfig"):
         }
         if language:
             settings_kwargs["language"] = language
+
+        vad_params = _build_gemini_vad_params(realtime_config)
+        if vad_params is not None:
+            settings_kwargs["vad"] = vad_params
+
         return DograhGeminiLiveLLMService(
             api_key=api_key,
             settings=DograhGeminiLiveLLMService.Settings(**settings_kwargs),
@@ -1465,6 +1499,11 @@ def create_realtime_llm_service(user_config, audio_config: "AudioConfig"):
         }
         if language:
             settings_kwargs["language"] = language
+
+        vad_params = _build_gemini_vad_params(realtime_config)
+        if vad_params is not None:
+            settings_kwargs["vad"] = vad_params
+
         return DograhGeminiLiveVertexLLMService(
             credentials=credentials,
             project_id=project_id,
