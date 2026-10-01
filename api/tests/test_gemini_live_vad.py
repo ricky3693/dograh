@@ -13,7 +13,6 @@ from api.services.pipecat.realtime.gemini_live_vertex import (
 )
 from api.services.pipecat.service_factory import create_realtime_llm_service
 
-
 VAD_FIELDS = {
     "start_of_speech_sensitivity",
     "end_of_speech_sensitivity",
